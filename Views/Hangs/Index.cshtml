@@ -1,0 +1,74 @@
+﻿@model PagedList.IPagedList<Simple_Ecommerce_Proj.Models.Hang>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+}
+<link rel="stylesheet" href="~/Content/PagedList.css" type="text/css" />
+<h2>Index</h2>
+
+ @*search box*@
+@using (Html.BeginForm())
+{
+    <p>
+        Search: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
+@*end here*@
+
+
+<table class="table">
+    <tr>
+        <th>
+            Mã Hàng
+        </th>
+        <th>
+            @Html.ActionLink("Tên hàng", "Index", new { sortOrder = ViewBag.OrderByName, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.ActionLink("Giá", "Index", new { sortOrder = ViewBag.OrderByPrice, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            Hình ảnh
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaHang)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenHang)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Gia)
+            </td>
+            <td>
+                @{
+                    string ImagePath = "~/wwwroot/Images/" + item.HinhAnh;
+                }
+                <img src="@Url.Content(ImagePath)" width="180" class="img-thumbnail" />
+                <br />
+                @Html.DisplayFor(modelItem => item.HinhAnh)
+            </td>
+            <td>
+                @Html.ActionLink("Chi tiết", "Details", new { id = item.MaHang }) |
+                @Html.ActionLink("Thêm vào giỏ", "", new { id = item.MaHang })
+
+            </td>
+        </tr>
+    }
+
+</table>
+
+<br />
+Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Index", new
+{
+    page,
+    sortOrder = ViewBag.CurrentSort,
+    currentFilter = ViewBag.CurrentFilter
+}))
